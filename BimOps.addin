@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Name>BimOps - Export Doors To Excel</Name>
+    <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
+    <AddInId>6BDAA0D4-2BC7-4AF4-8E81-57CF904B34B7</AddInId>
+    <FullClassName>BimOps.RevitAddin.Commands.ExportDoorsToExcelCommand</FullClassName>
+    <VendorId>BOPS</VendorId>
+    <VendorDescription>BIM automation toolkit</VendorDescription>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>BimOps - Import Doors From Excel</Name>
+    <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
+    <AddInId>589C6ED1-C0B6-48F2-87FE-1A772072F796</AddInId>
+    <FullClassName>BimOps.RevitAddin.Commands.ImportDoorsFromExcelCommand</FullClassName>
+    <VendorId>BOPS</VendorId>
+    <VendorDescription>BIM automation toolkit</VendorDescription>
+  </AddIn>
+
+    <AddIn Type="Application">
+        <Name>BimOps</Name>
+        <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
+        <AddInId>D5067EC0-FF69-4EAA-8175-A03782161C43</AddInId>
+        <FullClassName>BimOps.RevitAddin.App.Application_DialogBoxShowing</FullClassName>
+        <VendorId>BOPS</VendorId>
+        <VendorDescription>BIM automation toolkit</VendorDescription>
+    </AddIn>
+</RevitAddIns>

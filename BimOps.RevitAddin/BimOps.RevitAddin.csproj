@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<UseWindowsForms>true</UseWindowsForms>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<GenerateDependencyFile>true</GenerateDependencyFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="RevitAPI">
+			<HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPI.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+
+		<Reference Include="RevitAPIUI">
+			<HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPIUI.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BimOps.Modules.DataExchange\BimOps.Modules.DataExchange.csproj" />
+	</ItemGroup>
+
+	<Target Name="CopyToDevAddinFolder" AfterTargets="Build">
+		<ItemGroup>
+			<BuildOutput Include="$(TargetDir)**\*.*" />
+		</ItemGroup>
+
+		<MakeDir Directories="C:\RevitAddins\BimOps" />
+
+		<Copy SourceFiles="@(BuildOutput)" DestinationFiles="@(BuildOutput->'C:\RevitAddins\BimOps\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+	</Target>
+
+</Project>

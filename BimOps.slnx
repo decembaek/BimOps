@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/deploy/" />
+  <Folder Name="/deploy/2027/">
+    <File Path="BimOps.addin" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="BimOps.Modules.DataExchange/BimOps.Modules.DataExchange.csproj" />
+    <Project Path="BimOps.RevitAddin/BimOps.RevitAddin.csproj" />
+  </Folder>
+  <Folder Name="/솔루션 항목/">
+    <File Path="global.json" />
+  </Folder>
+</Solution>
