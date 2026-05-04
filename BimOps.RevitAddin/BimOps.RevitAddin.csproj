@@ -7,9 +7,14 @@
 		<Nullable>enable</Nullable>
 
 		<UseWindowsForms>true</UseWindowsForms>
+        <UseWPF>true</UseWPF>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<GenerateDependencyFile>true</GenerateDependencyFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Reference Include="RevitAPI">

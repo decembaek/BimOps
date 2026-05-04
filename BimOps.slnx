@@ -4,8 +4,13 @@
     <File Path="BimOps.addin" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="BimOps.Domain/BimOps.Domain.csproj" Id="bb819f67-3da0-4ef3-bb40-ae1850236159" />
     <Project Path="BimOps.Modules.DataExchange/BimOps.Modules.DataExchange.csproj" />
     <Project Path="BimOps.RevitAddin/BimOps.RevitAddin.csproj" />
+    <Project Path="BimOps.UI/BimOps.UI.csproj" Id="1346a114-784e-4453-a56b-1b7573a7224f" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="BimOps.UI.Test/BimOps.UI.Test.csproj" Id="107b56ca-e801-4ebc-837c-64a3baec6685" />
   </Folder>
   <Folder Name="/솔루션 항목/">
     <File Path="global.json" />
