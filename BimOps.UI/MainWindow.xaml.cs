@@ -49,15 +49,15 @@ namespace BimOps.UI
                     StatusText.Text = "Status: 데이터 가져오기";
                     break;
                 case "데이터 관리":
-                    MainContent.Content = null;
+                    MainContent.Content = new DataManagementView();
                     StatusText.Text = "Status: 데이터 관리";
                     break;
                 case "계산 / 검증":
-                    MainContent.Content = null;
+                    MainContent.Content = new VerificationView();
                     StatusText.Text = "Status: 계산 / 검증";
                     break;
                 case "결과 / 보고서":
-                    MainContent.Content = null;
+                    MainContent.Content = new ResultView();
                     StatusText.Text = "Status: 결과 / 보고서";
                     break;
             }

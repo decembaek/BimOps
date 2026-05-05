@@ -5,8 +5,330 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BimOps.UI.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="#FAFAFA"
+             TextElement.Foreground="#212121"
+             TextElement.FontFamily="Segoe UI"
+             TextElement.FontSize="13">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#1E5A8E"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="ToolbarBrush" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="DividerBrush" Color="#D0D0D0"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#212121"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#616161"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#1976D2"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#D32F2F"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#388E3C"/>
+
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="20,16"/>
+        </Style>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="PathTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="DefaultButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E8F0F7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+
+        <Style x:Key="BrowseButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="MinWidth" Value="64"/>
+            <Setter Property="Margin" Value="8,0,0,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- 최상위: 2행 Grid (스크롤 영역 + 하단 고정 버튼 바) -->
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 스크롤되는 콘텐츠 -->
+        <ScrollViewer Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="Transparent">
+            <Grid Margin="4,4,4,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 1. 페이지 제목 -->
+                <TextBlock Grid.Row="0"
+                           Text="데이터 가져오기"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Margin="0,0,0,24"/>
+
+                <!-- 2. 기준 정보 -->
+                <StackPanel Grid.Row="1" Margin="0,0,0,24">
+                    <TextBlock Text="기준 정보" Style="{StaticResource SectionTitleStyle}"/>
+                    <Border Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="프로젝트" Style="{StaticResource FormLabelStyle}"/>
+                            <ComboBox  Grid.Row="0" Grid.Column="1"
+                                       x:Name="CboProject"
+                                       Style="{StaticResource FormComboBoxStyle}"
+                                       Margin="0,0,0,12"
+                                       SelectionChanged="CboProject_SelectionChanged"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="판매 차수" Style="{StaticResource FormLabelStyle}"/>
+                            <ComboBox  Grid.Row="1" Grid.Column="1"
+                                       x:Name="CboSalesRound"
+                                       Style="{StaticResource FormComboBoxStyle}"
+                                       Margin="0,0,0,12"
+                                       SelectionChanged="CboSalesRound_SelectionChanged"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="비교 기준" Style="{StaticResource FormLabelStyle}"/>
+                            <ComboBox  Grid.Row="2" Grid.Column="1"
+                                       x:Name="CboCompareBaseline"
+                                       Style="{StaticResource FormComboBoxStyle}"
+                                       SelectionChanged="CboCompareBaseline_SelectionChanged"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- 3. Import -->
+                <StackPanel Grid.Row="2" Margin="0,0,0,24">
+                    <TextBlock Text="Import" Style="{StaticResource SectionTitleStyle}"/>
+                    <Border Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="분양 옵션 데이터"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     x:Name="TxtSalesOptionPath"
+                                     Style="{StaticResource PathTextBoxStyle}"
+                                     Margin="0,0,0,12"/>
+                            <Button  Grid.Row="0" Grid.Column="2"
+                                     Content="찾기"
+                                     Style="{StaticResource BrowseButtonStyle}"
+                                     Margin="8,0,0,12"
+                                     Click="BtnFindSalesOption_Click"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Revit 물량 데이터"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     x:Name="TxtRevitQuantityPath"
+                                     Style="{StaticResource PathTextBoxStyle}"
+                                     Margin="0,0,0,12"/>
+                            <Button  Grid.Row="1" Grid.Column="2"
+                                     Content="찾기"
+                                     Style="{StaticResource BrowseButtonStyle}"
+                                     Margin="8,0,0,12"
+                                     Click="BtnFindRevitQuantity_Click"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="옵션 룰 파일"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1"
+                                     x:Name="TxtOptionRulesPath"
+                                     Style="{StaticResource PathTextBoxStyle}"/>
+                            <Button  Grid.Row="2" Grid.Column="2"
+                                     Content="찾기"
+                                     Style="{StaticResource BrowseButtonStyle}"
+                                     Click="BtnFindOptionRules_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- 4. 데이터 미리보기 -->
+                <StackPanel Grid.Row="3">
+                    <Grid Margin="0,0,0,8">
+                        <TextBlock Text="데이터 미리보기" Style="{StaticResource SectionTitleStyle}" Margin="0"/>
+                        <TextBlock x:Name="TxtPreviewSummary"
+                                   Text="총 0건"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource CardStyle}" Padding="0">
+                        <DataGrid x:Name="GridPreview"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column"
+                                  RowHeight="32"
+                                  MinHeight="180"
+                                  MaxHeight="320"
+                                  Background="White"
+                                  Foreground="{StaticResource TextPrimaryBrush}"
+                                  BorderThickness="0"
+                                  HorizontalGridLinesBrush="{StaticResource DividerBrush}"
+                                  RowBackground="White"
+                                  AlternatingRowBackground="#FAFAFA">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="{StaticResource ToolbarBrush}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="12,8"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Padding" Value="12,4"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DataGridCell">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="동"      Binding="{Binding Building}"   Width="60"/>
+                                <DataGridTextColumn Header="호"      Binding="{Binding UnitNo}"     Width="80"/>
+                                <DataGridTextColumn Header="타입"    Binding="{Binding UnitType}"   Width="80"/>
+                                <DataGridTextColumn Header="공간"    Binding="{Binding Space}"      Width="100"/>
+                                <DataGridTextColumn Header="옵션명"  Binding="{Binding OptionName}" Width="*"/>
+                                <DataGridTextColumn Header="상태"    Binding="{Binding Status}"     Width="120"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- 하단 고정 액션 바 -->
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="{StaticResource DividerBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="20,12">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Button Content="미리보기"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Margin="0,0,12,0"
+                        Click="BtnPreview_Click"/>
+                <Button Content="검증"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Margin="0,0,12,0"
+                        Click="BtnValidate_Click"/>
+                <Button Content="가져오기"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Height="36"
+                        Padding="20,0"
+                        Click="BtnImport_Click"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

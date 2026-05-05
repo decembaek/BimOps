@@ -63,6 +63,15 @@
     <Compile Include="Views\ImportDataView.xaml.cs">
       <DependentUpon>ImportDataView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DataManagementView.xaml.cs">
+      <DependentUpon>DataManagementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ResultView.xaml.cs">
+      <DependentUpon>ResultView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VerificationView.xaml.cs">
+      <DependentUpon>VerificationView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml">
@@ -74,6 +83,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ImportDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataManagementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ResultView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VerificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BimOps - 세대 옵션 물량 자동화"
-        Height="600" Width="1000"
+        Height="700" Width="1100"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA"
         FontFamily="Segoe UI"
@@ -22,7 +22,7 @@
 
         <!-- 사이드바 메뉴 아이템 -->
         <Style x:Key="NavItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Padding" Value="16,14"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -52,6 +52,25 @@
             </Setter>
         </Style>
 
+        <!-- 컨텍스트 영역 라벨 -->
+        <Style x:Key="ContextLabelStyle" TargetType="TextBlock">
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+
+        <!-- 컨텍스트 ComboBox -->
+        <Style x:Key="ContextComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Width" Value="280"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
         <!-- 기본 버튼 -->
         <Style x:Key="DefaultButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="32"/>
@@ -71,7 +90,8 @@
                                 CornerRadius="3">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
-                                              Margin="{TemplateBinding Padding}"/>
+                                              Margin="{TemplateBinding Padding}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -97,9 +117,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- 헤더 -->
             <RowDefinition Height="Auto"/>
+            <!-- 프로젝트 컨텍스트 -->
             <RowDefinition Height="*"/>
+            <!-- 본문 -->
             <RowDefinition Height="Auto"/>
+            <!-- 상태바 -->
         </Grid.RowDefinitions>
 
         <!-- 1. 헤더 -->
@@ -111,28 +135,60 @@
                        Foreground="{StaticResource PrimaryForegroundBrush}"/>
         </Border>
 
-        <!-- 2. 프로젝트 정보 바 -->
+        <!-- 2. 프로젝트 컨텍스트 영역 -->
         <Border Grid.Row="1"
                 Background="{StaticResource ToolbarBrush}"
                 BorderBrush="{StaticResource DividerBrush}"
                 BorderThickness="0,0,0,1"
-                Padding="20,10">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Project: " FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}"/>
-                <TextBlock Text="A아파트 신축공사" Margin="0,0,28,0"
-                           Foreground="{StaticResource TextPrimaryBrush}"/>
-                <TextBlock Text="Current Round: " FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}"/>
-                <TextBlock Text="2차 판매" Margin="0,0,28,0"
-                           Foreground="{StaticResource TextPrimaryBrush}"/>
-                <TextBlock Text="Revision: " FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}"/>
-                <TextBlock Text="V3" Foreground="{StaticResource TextPrimaryBrush}"/>
-            </StackPanel>
+                Padding="20,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 좌측: ComboBox 3개 -->
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="Project" Style="{StaticResource ContextLabelStyle}"/>
+                        <ComboBox x:Name="CboProject"
+                                  Style="{StaticResource ContextComboBoxStyle}"
+                                  SelectionChanged="CboProject_SelectionChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="Round" Style="{StaticResource ContextLabelStyle}"/>
+                        <ComboBox x:Name="CboRound"
+                                  Style="{StaticResource ContextComboBoxStyle}"
+                                  SelectionChanged="CboRound_SelectionChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Compare" Style="{StaticResource ContextLabelStyle}"/>
+                        <ComboBox x:Name="CboCompare"
+                                  Style="{StaticResource ContextComboBoxStyle}"
+                                  SelectionChanged="CboCompare_SelectionChanged"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 우측: 액션 버튼 -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Bottom">
+                    <Button Content="프로젝트 설정"
+                            Style="{StaticResource DefaultButtonStyle}"
+                            MinWidth="110"
+                            Margin="0,0,8,0"
+                            Click="BtnProjectSettings_Click"/>
+                    <Button Content="저장"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            MinWidth="80"
+                            Click="BtnSave_Click"/>
+                </StackPanel>
+            </Grid>
         </Border>
 
-        <!-- 3. 본문 -->
+        <!-- 3. 본문 (사이드바 + 컨텐츠) -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
@@ -149,11 +205,9 @@
                          Background="Transparent"
                          ItemContainerStyle="{StaticResource NavItemStyle}"
                          SelectionChanged="NavigationMenu_SelectionChanged">
-                    <ListBoxItem Content="대시보드"/>
-                    <ListBoxItem Content="데이터 가져오기"/>
-                    <ListBoxItem Content="데이터 관리"/>
-                    <ListBoxItem Content="계산 / 검증"/>
-                    <ListBoxItem Content="결과 / 보고서"/>
+                    <ListBoxItem Content="옵션 물량 산출"/>
+                    <ListBoxItem Content="기준 데이터 관리"/>
+                    <ListBoxItem Content="산출 이력/보고서"/>
                 </ListBox>
             </Border>
 
@@ -173,16 +227,11 @@
                            Text="Status: Ready"
                            VerticalAlignment="Center"
                            Foreground="{StaticResource TextSecondaryBrush}"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="저장"
-                            Style="{StaticResource DefaultButtonStyle}"
-                            Width="80" Margin="0,0,8,0"
-                            Click="SaveButton_Click"/>
-                    <Button Content="닫기"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Width="80"
-                            Click="CloseButton_Click"/>
-                </StackPanel>
+                <TextBlock x:Name="LastSavedText"
+                           Text="Last Saved: --:--"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
             </Grid>
         </Border>
     </Grid>
