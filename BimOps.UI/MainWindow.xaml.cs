@@ -127,6 +127,22 @@ namespace BimOps.UI
                     calc.GoToResult += (_, __) => NavigateTo(WorkArea.QuantityResult);
                     return calc;
 
+                case WorkArea.QuantityResult:
+                    var result = new QuantityResultView();
+                    result.GoToHistory += (_, __) => NavigateTo(WorkArea.HistoryReport);
+                    result.RecalcRequested += (_, __) => NavigateTo(WorkArea.QuantityCalculation);
+                    return result;
+
+                case WorkArea.HistoryReport:
+                    var history = new HistoryReportView();
+                    history.RoundOpenRequested += (_, item) =>
+                    {
+                        // 차수 더블클릭 시 해당 차수 컨텍스트로 산출 결과로 이동
+                        // TODO: _currentRound 동기화
+                        NavigateTo(WorkArea.QuantityResult);
+                    };
+                    return history;
+
                 default:
                     // placeholder
                     var sp = new StackPanel { Margin = new Thickness(8) };

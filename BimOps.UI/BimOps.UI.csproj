@@ -55,6 +55,8 @@
   <ItemGroup>
     <Compile Include="AppState.cs" />
     <Compile Include="Models\CalculationModels.cs" />
+    <Compile Include="Models\HistoryReportModels.cs" />
+    <Compile Include="Models\ResultModels.cs" />
     <Compile Include="Models\UnitOptionModels.cs" />
     <Compile Include="Models\ReferenceDataModels.cs" />
     <Compile Include="Models\WorkArea.cs" />
@@ -79,6 +81,12 @@
     </Compile>
     <Compile Include="Views\UnitOptionStatusView.xaml.cs">
       <DependentUpon>UnitOptionStatusView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\QuantityResultView.xaml.cs">
+      <DependentUpon>QuantityResultView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HistoryReportView.xaml.cs">
+      <DependentUpon>HistoryReportView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +118,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UnitOptionStatusView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\QuantityResultView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\HistoryReportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

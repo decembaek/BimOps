@@ -1,0 +1,354 @@
+﻿<UserControl x:Class="BimOps.UI.Views.HistoryReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="Segoe UI"
+             FontSize="13"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BimOps.UI;component/Themes/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="StatCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SubtleBgBrush}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="12,10"/>
+                <Setter Property="Margin" Value="0,0,8,0"/>
+            </Style>
+
+            <Style x:Key="SectionStyle" TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="6"/>
+                <Setter Property="Padding" Value="16"/>
+                <Setter Property="Margin" Value="0,0,0,12"/>
+            </Style>
+
+            <Style x:Key="ExportOptionRow" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SubtleBgBrush}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="14,12"/>
+                <Setter Property="Margin" Value="0,0,0,6"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===== 헤더 ===== -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="산출 이력 / 보고서" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock x:Name="TxtSubtitle"
+                           FontSize="13"
+                           Foreground="{StaticResource TextTertiaryBrush}"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ===== 탭 ===== -->
+        <TabControl Grid.Row="1"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{StaticResource DividerBrush}"
+                    Background="Transparent">
+
+            <!-- 탭 1: 산출 이력 -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="산출 이력"/>
+                        <TextBlock x:Name="TxtHistoryCount"
+                                   FontSize="11"
+                                   Foreground="{StaticResource TextTertiaryBrush}"
+                                   Margin="6,0,0,0"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid Margin="0,12,0,0">
+                    <DataGrid x:Name="HistoryGrid"
+                              MouseDoubleClick="HistoryGrid_MouseDoubleClick">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="차수" Binding="{Binding RoundName}" Width="120" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="상태" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="3" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                Background="{StaticResource BadgeNeutralBgBrush}">
+                                            <TextBlock Text="{Binding Status}"
+                                                       FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource BadgeNeutralFgBrush}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="산출일시" Binding="{Binding CalcAtLabel}" Width="160" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="대상 세대" Binding="{Binding UnitCount, StringFormat=N0}" Width="100" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="옵션 적용" Binding="{Binding AppliedCount, StringFormat=N0}" Width="100" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="산출자" Binding="{Binding Operator}" Width="120" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Excel 출력" Binding="{Binding ExportedLabel}" Width="*" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- 탭 2: Diff (변경 통보서) -->
+            <TabItem Header="Diff (변경 통보서)">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                    <StackPanel>
+
+                        <!-- from/to 선택 + 통보서 출력 -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="비교"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,12,0"/>
+                                    <ComboBox x:Name="CboFrom"
+                                              MinWidth="140" Height="28"
+                                              SelectionChanged="DiffSelection_Changed"/>
+                                    <TextBlock Text="  →  "
+                                               Foreground="{StaticResource TextTertiaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                    <ComboBox x:Name="CboTo"
+                                              MinWidth="140" Height="28"
+                                              SelectionChanged="DiffSelection_Changed"/>
+                                </StackPanel>
+                                <Button Content="변경 통보서 출력"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="BtnExportNotice_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- 통계 카드 -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="변경 세대" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock x:Name="TxtChangedUnits" Text="—" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="옵션 추가" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock x:Name="TxtAdded" Text="—" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{StaticResource BadgeSuccessFgBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="옵션 취소" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock x:Name="TxtRemoved" Text="—" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{StaticResource BadgeDangerFgBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Style="{StaticResource StatCardStyle}" Margin="0">
+                                <StackPanel>
+                                    <TextBlock Text="위치/수량 변경" FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <TextBlock x:Name="TxtRelocated" Text="—" FontSize="18" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- 변경 내역 테이블 -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="변경 내역"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <DataGrid x:Name="DiffGrid"
+                                          MaxHeight="320">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="동·호" Binding="{Binding UnitLabel}" Width="100" IsReadOnly="True"/>
+                                        <DataGridTemplateColumn Header="유형" Width="100">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Border CornerRadius="3" Padding="6,2"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                            Background="{Binding ChangeTypeBgBrush}">
+                                                        <TextBlock Text="{Binding ChangeTypeText}"
+                                                                   FontSize="11" FontWeight="SemiBold"
+                                                                   Foreground="{Binding ChangeTypeFgBrush}"/>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTextColumn Header="옵션" Binding="{Binding OptionName}" Width="140" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="변경" Binding="{Binding ChangeDescription}" Width="180" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="마감재 영향" Binding="{Binding FinishImpact}" Width="*" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 마감재별 누적 증감 -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="마감재별 누적 증감"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <ItemsControl x:Name="DeltaSummary">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="5"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{StaticResource SubtleBgBrush}"
+                                                    CornerRadius="4" Padding="12,10" Margin="0,0,8,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding FinishName}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                        <TextBlock Text="{Binding DisplayQty}"
+                                                                   FontSize="16" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{Binding Uom}"
+                                                                   FontSize="11"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   VerticalAlignment="Bottom"
+                                                                   Margin="3,0,0,2"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- 탭 3: Excel 출력 -->
+            <TabItem Header="Excel 출력">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+                    <StackPanel MaxWidth="720" HorizontalAlignment="Left">
+
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="대상 차수"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <ComboBox x:Name="CboExportRound"
+                                          Width="240" HorizontalAlignment="Left"
+                                          Height="30"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="출력 항목"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <Border Style="{StaticResource ExportOptionRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="ChkResult" Grid.Column="0"
+                                                  IsChecked="True" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBlock Text="산출 결과 (3시트)" FontWeight="SemiBold"/>
+                                            <TextBlock Text="동별 집계 / 세대별 명세 / 마감재 총괄"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Style="{StaticResource ExportOptionRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="ChkNotice" Grid.Column="0"
+                                                  IsChecked="True" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBlock Text="변경 통보서" FontWeight="SemiBold"/>
+                                            <TextBlock Text="직전 차수와의 Diff. 1차일 경우 자동 비활성화."
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Style="{StaticResource ExportOptionRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="ChkMaster" Grid.Column="0"
+                                                  IsChecked="True" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBlock Text="누적 마감재 마스터" FontWeight="SemiBold"/>
+                                            <TextBlock Text="1차부터 현재 차수까지 누적 최종 물량. 발주·정산용."
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <TextBlock Text="저장 경로"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             x:Name="TxtSavePath"
+                                             Height="30"
+                                             VerticalContentAlignment="Center"
+                                             Padding="8,0"/>
+                                    <Button Grid.Column="1"
+                                            Content="찾아보기"
+                                            Style="{StaticResource SmallButtonStyle}"
+                                            Margin="6,0,0,0" Height="30"
+                                            Click="BtnBrowse_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="Excel 출력"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                MinWidth="120"
+                                Click="BtnExport_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
