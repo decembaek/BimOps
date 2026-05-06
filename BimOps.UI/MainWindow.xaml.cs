@@ -1,77 +1,238 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using BimOps.UI.Views;
+using BimOps.UI.Models;
+
+using BimOps.UI;
 
 namespace BimOps.UI
 {
-    /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
-    /// </summary>
     public partial class MainWindow : Window
     {
+        // ===== 상태 =====
+        private ProjectCardItem _currentProject;
+        private readonly ObservableCollection<RoundTimelineItem> _rounds
+            = new ObservableCollection<RoundTimelineItem>();
+        private RoundTimelineItem _currentRound;
+        private WorkArea _currentArea = WorkArea.Home;
+        private bool _suppressEvents;
+
+        // 작업 화면별 메타 (제목 + 차수 드롭다운 표시 여부)
+        private static readonly Dictionary<WorkArea, WorkAreaInfo> AreaMeta
+             = new Dictionary<WorkArea, WorkAreaInfo>
+         {
+            { WorkArea.ReferenceData,        new WorkAreaInfo("기준 데이터",          false) },
+            { WorkArea.UnitOptionStatus,     new WorkAreaInfo("세대 옵션 현황",       true ) },
+            { WorkArea.QuantityCalculation,  new WorkAreaInfo("옵션 물량 산출",       true ) },
+            { WorkArea.QuantityResult,       new WorkAreaInfo("산출 결과",            true ) },
+            { WorkArea.HistoryReport,        new WorkAreaInfo("산출 이력 / 보고서",   false) },
+         };
+
         public MainWindow()
         {
             InitializeComponent();
-
-            MainContent.Content = new DashboardView();
-            StatusText.Text = "Status: 대시보드";
+            Loaded += MainWindow_Loaded;
         }
-        // ↑ 여기서 클래스를 닫지 말 것!
 
-        private void NavigationMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // =========================================================
+        // 진입 / 초기화
+        // =========================================================
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded) return;
+            var project = AppState.SelectedProject ?? GetSampleProject();
+            LoadProjectContext(project);
+            NavigateTo(WorkArea.Home);
+        }
 
-            var item = NavigationMenu.SelectedItem as ListBoxItem;
-            if (item == null)
-                return;
+        private void LoadProjectContext(ProjectCardItem project)
+        {
+            _currentProject = project ?? throw new ArgumentNullException(nameof(project));
 
-            switch (item.Content?.ToString())
+            // 헤더 단지명 갱신
+            TxtHeaderProject.Text = $"{project.Code} / {project.Name}";
+
+            // 차수 목록 로드
+            _rounds.Clear();
+            var rounds = (AppState.LoadRounds?.Invoke(project) ?? GetSampleRounds()).ToList();
+            for (int i = 0; i < rounds.Count; i++)
             {
-                case "대시보드":
-                    MainContent.Content = new DashboardView();
-                    StatusText.Text = "Status: 대시보드";
-                    break;
-                case "데이터 가져오기":
-                    MainContent.Content = new ImportDataView();
-                    StatusText.Text = "Status: 데이터 가져오기";
-                    break;
-                case "데이터 관리":
-                    MainContent.Content = new DataManagementView();
-                    StatusText.Text = "Status: 데이터 관리";
-                    break;
-                case "계산 / 검증":
-                    MainContent.Content = new VerificationView();
-                    StatusText.Text = "Status: 계산 / 검증";
-                    break;
-                case "결과 / 보고서":
-                    MainContent.Content = new ResultView();
-                    StatusText.Text = "Status: 결과 / 보고서";
-                    break;
+                rounds[i].IsLast = (i == rounds.Count - 1);
+                _rounds.Add(rounds[i]);
+            }
+
+            _suppressEvents = true;
+            CboRound.ItemsSource = _rounds;
+            _currentRound = _rounds.LastOrDefault();
+            CboRound.SelectedItem = _currentRound;
+            _suppressEvents = false;
+
+            UpdateStatus();
+        }
+
+        // =========================================================
+        // 화면 라우팅 (단일 진입점)
+        // =========================================================
+        private void NavigateTo(WorkArea area)
+        {
+            _currentArea = area;
+
+            if (area == WorkArea.Home)
+            {
+                ContextBar.Visibility = Visibility.Collapsed;
+                MainContent.Content = BuildHomeView();
+            }
+            else
+            {
+                var meta = AreaMeta[area];
+                ContextBar.Visibility = Visibility.Visible;
+                TxtBreadcrumb.Text = meta.Title;
+                RoundContextPanel.Visibility = meta.ShowRound
+                    ? Visibility.Visible : Visibility.Collapsed;
+                MainContent.Content = BuildWorkView(area, meta.Title);
+            }
+
+            UpdateStatus();
+        }
+
+        private ProjectHomeView BuildHomeView()
+        {
+            var home = new ProjectHomeView();
+            home.WorkAreaSelected += Home_WorkAreaSelected;
+            home.RoundSelected += Home_RoundSelected;
+            home.RequestNewRound += (_, __) => CreateNewRound();
+            home.RequestEditProject += (_, __) => OpenProjectSettings();
+            home.LoadProject(_currentProject, _rounds);
+            return home;
+        }
+
+        // 작업 화면 플레이스홀더 (구현되면 실제 UserControl로 교체)
+        private UIElement BuildWorkView(WorkArea area, string title)
+        {
+            switch (area)
+            {
+                case WorkArea.ReferenceData:
+                    return new ReferenceDataView();
+
+                case WorkArea.UnitOptionStatus:
+                    var status = new UnitOptionStatusView();
+                    status.GoToCalculation += (_, __) => NavigateTo(WorkArea.QuantityCalculation);
+                    return status;
+
+                case WorkArea.QuantityCalculation:
+                    var calc = new QuantityCalculationView();
+                    calc.GoToResult += (_, __) => NavigateTo(WorkArea.QuantityResult);
+                    return calc;
+
+                default:
+                    // placeholder
+                    var sp = new StackPanel { Margin = new Thickness(8) };
+                    sp.Children.Add(new TextBlock
+                    {
+                        Text = title,
+                        FontSize = 18,
+                        FontWeight = FontWeights.SemiBold,
+                        Margin = new Thickness(0, 0, 0, 8)
+                    });
+                    sp.Children.Add(new TextBlock
+                    {
+                        Text = $"{area} 화면 (구현 예정)",
+                        Foreground = System.Windows.Media.Brushes.Gray
+                    });
+                    return sp;
             }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        // =========================================================
+        // 이벤트 핸들러
+        // =========================================================
+        private void Home_WorkAreaSelected(object sender, WorkAreaEventArgs e)
+            => NavigateTo(e.Area);
+
+        private void Home_RoundSelected(object sender, RoundTimelineItem round)
         {
-            // TODO: 저장 로직
-            StatusText.Text = "Status: 저장됨";
+            _suppressEvents = true;
+            CboRound.SelectedItem = round;
+            _currentRound = round;
+            _suppressEvents = false;
+            NavigateTo(WorkArea.UnitOptionStatus);
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void BtnHome_Click(object sender, RoutedEventArgs e)
+            => NavigateTo(WorkArea.Home);
+
+        private void BtnChangeProject_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            var sel = new ProjectSelectionWindow();
+            sel.Show();
+            this.Close();
         }
-    } // ← MainWindow 클래스 닫는 중괄호
-} // ← namespace 닫는 중괄호
+
+        private void CboRound_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_suppressEvents) return;
+            if (CboRound.SelectedItem is RoundTimelineItem r)
+            {
+                _currentRound = r;
+                UpdateStatus();
+                // TODO: 현재 작업 화면에 차수 변경 알림 (재로드)
+            }
+        }
+
+        private void OpenProjectSettings()
+        {
+            var dlg = new ProjectSettingsWindow { Owner = this };
+            if (dlg.ShowDialog() == true)
+            {
+                // TODO: dlg.FinishCategories를 ReferenceDataView 등에 반영
+                StatusText.Text = "Status: 프로젝트 설정 저장됨";
+            }
+        }
+
+        private void CreateNewRound()
+        {
+            MessageBox.Show("새 차수 생성 다이얼로그 (구현 예정)",
+                "BimOps", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // =========================================================
+        // 유틸
+        // =========================================================
+        private void UpdateStatus()
+        {
+            string project = _currentProject?.Code ?? "프로젝트 없음";
+            string round = _currentRound?.Name ?? "—";
+            string area = _currentArea == WorkArea.Home ? "홈" : AreaMeta[_currentArea].Title;
+            StatusText.Text = $"Status: {project} · {round} · {area}";
+        }
+
+        // =========================================================
+        // 샘플 데이터 (실제 환경에서는 제거)
+        // =========================================================
+        private static ProjectCardItem GetSampleProject() => new ProjectCardItem
+        {
+            Code = "JJ-A1",
+            Name = "제주 A1블록",
+            BuildingCount = 24,
+            UnitCount = 1248,
+            UnitTypes = "84A/84B/110",
+        };
+
+        private static List<RoundTimelineItem> GetSampleRounds() => new List<RoundTimelineItem>
+        {
+            new RoundTimelineItem { Name = "1차",   Date = new DateTime(2026,4,12), Status = "FROZEN" },
+            new RoundTimelineItem { Name = "변경1", Date = new DateTime(2026,4,28), Status = "FROZEN" },
+            new RoundTimelineItem { Name = "2차",   Date = new DateTime(2026,5, 6), Status = "DRAFT", IsCurrent = true },
+        };
+
+        private class WorkAreaInfo
+        {
+            public string Title { get; }
+            public bool ShowRound { get; }
+            public WorkAreaInfo(string title, bool showRound) { Title = title; ShowRound = showRound; }
+        }
+    }
+}

@@ -1,0 +1,134 @@
+﻿<UserControl x:Class="BimOps.UI.Views.UnitOptionStatusView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="Segoe UI"
+             FontSize="13"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <!-- 검증 이슈 행 강조 -->
+        <Style x:Key="MatrixRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasIssue}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource BadgeDangerBgBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 통계 카드 -->
+        <Style x:Key="StatCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SubtleBgBrush}"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- 헤더 -->
+            <RowDefinition Height="Auto"/>
+            <!-- 통계 -->
+            <RowDefinition Height="*"/>
+            <!-- 매트릭스 -->
+        </Grid.RowDefinitions>
+
+        <!-- ===== 헤더 ===== -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="세대 옵션 현황" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock x:Name="TxtSubtitle"
+                           FontSize="13"
+                           Foreground="{StaticResource TextTertiaryBrush}"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Excel 임포트"
+                        Style="{StaticResource SmallButtonStyle}"
+                        Click="BtnImport_Click"/>
+                <Button Content="검증 재실행"
+                        Style="{StaticResource SmallButtonStyle}"
+                        Click="BtnValidate_Click"/>
+                <Button Content="산출 화면으로 →"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Margin="6,0,0,0"
+                        Click="BtnGoCalc_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ===== 통계 카드 ===== -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="총 세대"
+                               FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="TxtTotal"
+                               Text="—"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="정상"
+                               FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="TxtValid"
+                               Text="—"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource BadgeSuccessFgBrush}"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="검증 이슈"
+                               FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="TxtIssue"
+                               Text="—"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource BadgeDangerFgBrush}"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="3" Style="{StaticResource StatCardStyle}" Margin="0">
+                <StackPanel>
+                    <TextBlock Text="최종 임포트"
+                               FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="TxtLastImport"
+                               Text="—"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ===== 매트릭스 ===== -->
+        <DataGrid Grid.Row="2"
+                  x:Name="MatrixGrid"
+                  RowStyle="{StaticResource MatrixRowStyle}"
+                  SelectionUnit="FullRow"
+                  SelectionChanged="MatrixGrid_SelectionChanged"/>
+
+    </Grid>
+</UserControl>

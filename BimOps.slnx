@@ -10,6 +10,8 @@
     <Project Path="BimOps.UI/BimOps.UI.csproj" Id="1346a114-784e-4453-a56b-1b7573a7224f" />
   </Folder>
   <Folder Name="/test/">
+    <File Path="BimOps.UI/ProjectSelectionWindow.xaml" />
+    <File Path="BimOps.UI/ProjectSelectionWindow.xaml.cs" />
     <Project Path="BimOps.UI.Test/BimOps.UI.Test.csproj" Id="107b56ca-e801-4ebc-837c-64a3baec6685" />
   </Folder>
   <Folder Name="/솔루션 항목/">

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BimOps - 세대 옵션 물량 자동화"
-        Height="700" Width="1100"
+        Height="800" Width="1280"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA"
         FontFamily="Segoe UI"
@@ -12,59 +12,19 @@
         <!-- 컬러 팔레트 -->
         <SolidColorBrush x:Key="PrimaryBrush" Color="#1E5A8E"/>
         <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="White"/>
+        <SolidColorBrush x:Key="HeaderSubtleBrush" Color="#CCFFFFFF"/>
         <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="ToolbarBrush" Color="#F0F0F0"/>
         <SolidColorBrush x:Key="DividerBrush" Color="#D0D0D0"/>
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="#212121"/>
         <SolidColorBrush x:Key="TextSecondaryBrush" Color="#616161"/>
+        <SolidColorBrush x:Key="TextTertiaryBrush" Color="#9E9E9E"/>
         <SolidColorBrush x:Key="HoverBrush" Color="#E8F0F7"/>
-        <SolidColorBrush x:Key="SelectedBrush" Color="#D4E4F0"/>
-
-        <!-- 사이드바 메뉴 아이템 -->
-        <Style x:Key="NavItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="16,14"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="Bd"
-                                Background="Transparent"
-                                Padding="{TemplateBinding Padding}"
-                                CornerRadius="4"
-                                Margin="4,2">
-                            <ContentPresenter VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background"
-                                        Value="{StaticResource HoverBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Bd" Property="Background"
-                                        Value="{StaticResource SelectedBrush}"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- 컨텍스트 영역 라벨 -->
-        <Style x:Key="ContextLabelStyle" TargetType="TextBlock">
-            <Setter Property="Width" Value="64"/>
-            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,8,0"/>
-        </Style>
 
         <!-- 컨텍스트 ComboBox -->
         <Style x:Key="ContextComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="28"/>
-            <Setter Property="Width" Value="280"/>
+            <Setter Property="MinWidth" Value="200"/>
             <Setter Property="Padding" Value="8,2"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
@@ -74,7 +34,7 @@
         <!-- 기본 버튼 -->
         <Style x:Key="DefaultButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="32"/>
-            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Padding" Value="14,0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
@@ -104,13 +64,38 @@
             </Setter>
         </Style>
 
-        <!-- 강조 버튼 -->
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button"
+        <!-- 헤더용 외곽선 버튼 -->
+        <Style x:Key="HeaderOutlineButtonStyle" TargetType="Button"
                BasedOn="{StaticResource DefaultButtonStyle}">
-            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderBrush" Value="#66FFFFFF"/>
+            <Setter Property="Height" Value="28"/>
+        </Style>
+
+        <!-- 브레드크럼의 '홈' 링크 -->
+        <Style x:Key="BreadcrumbLinkStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock x:Name="Txt"
+                                   Text="{TemplateBinding Content}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   VerticalAlignment="Center"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Txt" Property="TextDecorations" Value="Underline"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -119,7 +104,7 @@
             <RowDefinition Height="Auto"/>
             <!-- 헤더 -->
             <RowDefinition Height="Auto"/>
-            <!-- 프로젝트 컨텍스트 -->
+            <!-- 컨텍스트 바 (작업 화면일 때만) -->
             <RowDefinition Height="*"/>
             <!-- 본문 -->
             <RowDefinition Height="Auto"/>
@@ -130,91 +115,96 @@
         <Border Grid.Row="0"
                 Background="{StaticResource PrimaryBrush}"
                 Padding="20,14">
-            <TextBlock Text="BimOps - 세대 옵션 물량 자동화"
-                       FontSize="16" FontWeight="SemiBold"
-                       Foreground="{StaticResource PrimaryForegroundBrush}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 로고 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 구분선 -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- 단지명 -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- 단지 변경 -->
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="BimOps"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{StaticResource PrimaryForegroundBrush}"
+                           VerticalAlignment="Center"/>
+
+                <Border Grid.Column="1"
+                        Width="1" Height="18"
+                        Background="{StaticResource HeaderSubtleBrush}"
+                        Margin="14,0"/>
+
+                <TextBlock Grid.Column="2"
+                           x:Name="TxtHeaderProject"
+                           Text="—"
+                           FontSize="13"
+                           Foreground="{StaticResource HeaderSubtleBrush}"
+                           VerticalAlignment="Center"/>
+
+                <Button Grid.Column="3"
+                        Content="단지 변경"
+                        Style="{StaticResource HeaderOutlineButtonStyle}"
+                        MinWidth="90"
+                        Click="BtnChangeProject_Click"/>
+            </Grid>
         </Border>
 
-        <!-- 2. 프로젝트 컨텍스트 영역 -->
-        <Border Grid.Row="1"
+        <!-- 2. 컨텍스트 바 (브레드크럼 + 차수 드롭다운) -->
+        <Border x:Name="ContextBar"
+                Grid.Row="1"
                 Background="{StaticResource ToolbarBrush}"
                 BorderBrush="{StaticResource DividerBrush}"
                 BorderThickness="0,0,0,1"
-                Padding="20,12">
+                Padding="20,10"
+                Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- 좌측: ComboBox 3개 -->
-                <StackPanel Grid.Column="0">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <TextBlock Text="Project" Style="{StaticResource ContextLabelStyle}"/>
-                        <ComboBox x:Name="CboProject"
-                                  Style="{StaticResource ContextComboBoxStyle}"
-                                  SelectionChanged="CboProject_SelectionChanged"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <TextBlock Text="Round" Style="{StaticResource ContextLabelStyle}"/>
-                        <ComboBox x:Name="CboRound"
-                                  Style="{StaticResource ContextComboBoxStyle}"
-                                  SelectionChanged="CboRound_SelectionChanged"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Compare" Style="{StaticResource ContextLabelStyle}"/>
-                        <ComboBox x:Name="CboCompare"
-                                  Style="{StaticResource ContextComboBoxStyle}"
-                                  SelectionChanged="CboCompare_SelectionChanged"/>
-                    </StackPanel>
+                <!-- 브레드크럼 -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button Content="홈"
+                            Style="{StaticResource BreadcrumbLinkStyle}"
+                            Click="BtnHome_Click"/>
+                    <TextBlock Text="  ›  "
+                               Foreground="{StaticResource TextTertiaryBrush}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtBreadcrumb"
+                               Text=""
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- 우측: 액션 버튼 -->
+                <!-- 차수 드롭다운 (화면별 visibility 제어) -->
                 <StackPanel Grid.Column="1"
+                            x:Name="RoundContextPanel"
                             Orientation="Horizontal"
-                            VerticalAlignment="Bottom">
-                    <Button Content="프로젝트 설정"
-                            Style="{StaticResource DefaultButtonStyle}"
-                            MinWidth="110"
-                            Margin="0,0,8,0"
-                            Click="BtnProjectSettings_Click"/>
-                    <Button Content="저장"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            MinWidth="80"
-                            Click="BtnSave_Click"/>
+                            VerticalAlignment="Center">
+                    <TextBlock Text="차수"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"/>
+                    <ComboBox x:Name="CboRound"
+                              Style="{StaticResource ContextComboBoxStyle}"
+                              DisplayMemberPath="ComboLabel"
+                              SelectionChanged="CboRound_SelectionChanged"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- 3. 본문 (사이드바 + 컨텐츠) -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0"
-                    Background="{StaticResource SurfaceBrush}"
-                    BorderBrush="{StaticResource DividerBrush}"
-                    BorderThickness="0,0,1,0">
-                <ListBox x:Name="NavigationMenu"
-                         SelectedIndex="0"
-                         BorderThickness="0"
-                         Background="Transparent"
-                         ItemContainerStyle="{StaticResource NavItemStyle}"
-                         SelectionChanged="NavigationMenu_SelectionChanged">
-                    <ListBoxItem Content="옵션 물량 산출"/>
-                    <ListBoxItem Content="기준 데이터 관리"/>
-                    <ListBoxItem Content="산출 이력/보고서"/>
-                </ListBox>
-            </Border>
-
-            <ContentControl Grid.Column="1"
-                            x:Name="MainContent"
-                            Margin="20"/>
-        </Grid>
+        <!-- 3. 본문 (단일 ContentControl) -->
+        <ContentControl Grid.Row="2"
+                        x:Name="MainContent"
+                        Margin="20"/>
 
         <!-- 4. 상태바 -->
         <Border Grid.Row="3"
