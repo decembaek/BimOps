@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+
 using BimOps.UI.Views;
 
 namespace BimOps.UI
@@ -12,9 +14,42 @@ namespace BimOps.UI
     {
         public static ProjectCardItem SelectedProject { get; set; }
         public static IEnumerable<ProjectCardItem> AvailableProjects { get; set; }
-
-        // 차수 로더 (서비스 주입 자리)
         public static Func<ProjectCardItem, IEnumerable<RoundTimelineItem>> LoadRounds { get; set; }
             = _ => null;
+
+        // ===== DB 경로 관리 =====
+        public static string DataRoot { get; } = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "BimOps", "Projects");
+
+        public static string ProjectsListPath => Path.Combine(DataRoot, "_projects.db");
+
+        /// <summary>현재 선택된 단지의 SQLite 파일 경로</summary>
+        public static string CurrentProjectDbPath
+        {
+            get
+            {
+                if (SelectedProject == null) return null;
+                return Path.Combine(DataRoot, $"{SelectedProject.Code}.db");
+            }
+        }
+        public static string CurrentConnectionString
+        {
+            get
+            {
+                var path = CurrentProjectDbPath;
+                if (string.IsNullOrEmpty(path)) return null;
+                return $"Data Source={path};Version=3;";
+            }
+        }
+
+        public static string ProjectsListConnectionString
+            => $"Data Source={ProjectsListPath};Version=3;";
+        /// <summary>앱 시작 시 1회 호출. 데이터 폴더 생성.</summary>
+        public static void EnsureDataRoot()
+        {
+            if (!Directory.Exists(DataRoot))
+                Directory.CreateDirectory(DataRoot);
+        }
     }
 }
