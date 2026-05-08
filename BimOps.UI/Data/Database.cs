@@ -8,6 +8,10 @@ namespace BimOps.UI.Data
     /// <summary>SQLite 연결 생성 + 스키마 초기화</summary>
     public static class Database
     {
+        static Database()
+        {
+            SQLitePCL.Batteries_V2.Init();
+        }
         /// <summary>단지 DB 파일이 없으면 생성하고 스키마 적용</summary>
         public static void EnsureProjectDb(string dbPath)
         {

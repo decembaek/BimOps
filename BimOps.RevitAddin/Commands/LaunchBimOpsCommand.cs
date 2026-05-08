@@ -40,9 +40,23 @@ namespace BimOps.UI.Commands
             catch (Exception ex)
             {
                 message = ex.Message;
-                System.Windows.MessageBox.Show(
-                    $"BimOps 시작 중 오류:\n\n{ex.Message}\n\n{ex.StackTrace}",
-                    "BimOps", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // InnerException까지 모두 펼쳐서 표시
+                var sb = new System.Text.StringBuilder();
+                var current = ex;
+                int depth = 0;
+                while (current != null)
+                {
+                    sb.AppendLine($"=== [{depth}] {current.GetType().FullName} ===");
+                    sb.AppendLine(current.Message);
+                    sb.AppendLine(current.StackTrace);
+                    sb.AppendLine();
+                    current = current.InnerException;
+                    depth++;
+                }
+
+                System.Windows.MessageBox.Show(sb.ToString(),
+                    "BimOps - 상세 오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 return Result.Failed;
             }
         }
