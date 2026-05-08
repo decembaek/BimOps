@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using BimOps.UI.Views;
+using BimOps.UI.Models;
 
 namespace BimOps.UI
 {
