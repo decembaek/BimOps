@@ -1,7 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using BimOps.UI.Data.Repositories;
+using BimOps.UI.Models;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using BimOps.UI.Models;
 
 namespace BimOps.UI
 {
@@ -10,21 +11,26 @@ namespace BimOps.UI
         public ObservableCollection<FinishCategory> FinishCategories { get; }
             = new ObservableCollection<FinishCategory>();
 
+        private readonly FinishCategoryRepository _finishRepo;
+
         public ProjectSettingsWindow()
         {
             InitializeComponent();
-            LoadDefault();
+
+            // 현재 단지의 DB에서 마감재 카테고리 로드
+            _finishRepo = new FinishCategoryRepository(AppState.CurrentConnectionString);
+            LoadFinishCategories();
+
             ShowFinishCategoryPanel();
         }
 
-        private void LoadDefault()
+        private void LoadFinishCategories()
         {
-            FinishCategories.Add(new FinishCategory { Code = "WALL", Name = "벽지", Uom = "㎡" });
-            FinishCategories.Add(new FinishCategory { Code = "FLOOR", Name = "마루", Uom = "㎡" });
-            FinishCategories.Add(new FinishCategory { Code = "CEIL", Name = "천장지", Uom = "㎡" });
-            FinishCategories.Add(new FinishCategory { Code = "BASE", Name = "걸레받이", Uom = "m" });
-            FinishCategories.Add(new FinishCategory { Code = "TILE", Name = "타일", Uom = "㎡" });
+            FinishCategories.Clear();
+            foreach (var fc in _finishRepo.GetAll())
+                FinishCategories.Add(fc);
         }
+
 
         private void NavMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -58,7 +64,9 @@ namespace BimOps.UI
             {
                 Text = "이 단지에서 관리할 마감재 종류를 정의합니다. 기준 데이터·산출 결과 등 모든 화면에서 이 목록을 참조합니다.",
                 FontSize = 12,
-                Foreground = (System.Windows.Media.Brush)FindResource("MutedBrush"),
+                // Foreground = (System.Windows.Media.Brush)FindResource("MutedBrush"),
+                Foreground = TryFindResource("TextTertiaryBrush") as System.Windows.Media.Brush
+                 ?? System.Windows.Media.Brushes.Gray,
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 12),
             };
@@ -110,15 +118,20 @@ namespace BimOps.UI
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            // dialogResult = false;
             Close();
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            // 화면의 ObservableCollection 상태를 그대로 DB에 반영
+            _finishRepo.ReplaceAll(FinishCategories);
+
             // TODO: FinishCategories를 영속화 (DB/파일)
-            DialogResult = true;
+            // DialogResult = true;
             Close();
         }
+
+
     }
 }

@@ -15,11 +15,51 @@ namespace BimOps.UI.Data
         /// <summary>단지 DB 파일이 없으면 생성하고 스키마 적용</summary>
         public static void EnsureProjectDb(string dbPath)
         {
+            bool isNew = !File.Exists(dbPath);
             EnsureFile(dbPath);
+
             using (var conn = new SqliteConnection($"Data Source={dbPath}"))
             {
                 conn.Open();
                 ExecuteEmbeddedScript(conn, "BimOps.UI.Data.Schema.sql");
+            }
+
+            // 새로 생성된 DB라면 기본 데이터 시딩
+            if (isNew)
+            {
+                SeedDefaultFinishCategories(dbPath);
+            }
+        }
+        private static void SeedDefaultFinishCategories(string dbPath)
+        {
+            string connStr = $"Data Source={dbPath}";
+            using (var conn = new SqliteConnection(connStr))
+            {
+                    conn.Open();
+                    var defaults = new[]
+                    {
+                new { Code = "WALL",  Name = "벽지",     Uom = "㎡", Remark = (string)null },
+                new { Code = "FLOOR", Name = "마루",     Uom = "㎡", Remark = (string)null },
+                new { Code = "CEIL",  Name = "천장지",   Uom = "㎡", Remark = (string)null },
+                new { Code = "BASE",  Name = "걸레받이", Uom = "m",  Remark = (string)null },
+                new { Code = "TILE",  Name = "타일",     Uom = "㎡", Remark = (string)null },
+            };
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    foreach (var d in defaults)
+                    {
+                        cmd.CommandText = @"
+                    INSERT INTO finish_category (code, name, uom, remark)
+                    VALUES (@code, @name, @uom, @remark)";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@code", d.Code);
+                        cmd.Parameters.AddWithValue("@name", d.Name);
+                        cmd.Parameters.AddWithValue("@uom", d.Uom);
+                        cmd.Parameters.AddWithValue("@remark", (object)d.Remark ?? System.DBNull.Value);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
 

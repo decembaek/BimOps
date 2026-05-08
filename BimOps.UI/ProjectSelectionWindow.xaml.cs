@@ -178,6 +178,12 @@ namespace BimOps.UI
             _repo.TouchLastModified(project.Code);
 
             var main = new MainWindow();
+
+            // MainWindow도 Revit 메인 윈도우의 자식으로 띄우기
+            var helper = new System.Windows.Interop.WindowInteropHelper(main);
+            helper.Owner = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+
+
             main.Show();
             this.Close();
         }

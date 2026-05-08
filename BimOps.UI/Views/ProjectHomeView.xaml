@@ -6,7 +6,7 @@
              Background="Transparent">
 
     <UserControl.Resources>
-        <!-- 컬러 팔레트 -->
+
         <SolidColorBrush x:Key="PrimaryBrush" Color="#1E5A8E"/>
         <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="SubtleBrush" Color="#F5F5F5"/>

@@ -200,11 +200,25 @@ namespace BimOps.UI
 
         private void OpenProjectSettings()
         {
-            var dlg = new ProjectSettingsWindow { Owner = this };
-            if (dlg.ShowDialog() == true)
+            try
             {
-                // TODO: dlg.FinishCategories를 ReferenceDataView 등에 반영
-                StatusText.Text = "Status: 프로젝트 설정 저장됨";
+                var w = new Window
+                {
+                    Title = "테스트",
+                    Width = 400,
+                    Height = 300,
+                    Content = new TextBlock { Text = "테스트 윈도우입니다" }
+                };
+
+                // Revit 메인 윈도우 핸들을 Owner로 직접 지정
+                var helper = new System.Windows.Interop.WindowInteropHelper(w);
+                helper.Owner = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+
+                w.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
