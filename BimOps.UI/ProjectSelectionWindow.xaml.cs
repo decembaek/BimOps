@@ -9,13 +9,15 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using BimOps.UI.Data;
 using BimOps.UI.Views;
 
 namespace BimOps.UI
 {
     public partial class ProjectSelectionWindow : Window
     {
+
+
         private readonly ObservableCollection<ProjectCardItem> _allProjects = new ObservableCollection<ProjectCardItem>();
         private ICollectionView _view;
         private string _statusFilter = "All";
@@ -31,6 +33,11 @@ namespace BimOps.UI
             LoadSampleData();   // 실제 환경에서는 DB·서비스에서 로드
             InitializeView();
             UpdateCount();
+
+            // DB 생성
+            AppState.EnsureDataRoot();
+            Database.EnsureProjectsListDb(AppState.ProjectsListPath);
+
         }
 
         // ===== 데이터 초기화 =====
@@ -135,6 +142,8 @@ namespace BimOps.UI
             // 컨텍스트 주입 후 MainWindow 진입
             AppState.SelectedProject = project;
             AppState.AvailableProjects = _allProjects;
+
+            Database.EnsureProjectDb(AppState.CurrentProjectDbPath);
 
             var main = new MainWindow();
             main.Show();

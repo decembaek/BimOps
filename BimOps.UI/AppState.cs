@@ -39,12 +39,12 @@ namespace BimOps.UI
             {
                 var path = CurrentProjectDbPath;
                 if (string.IsNullOrEmpty(path)) return null;
-                return $"Data Source={path};Version=3;";
+                return $"Data Source={path}";
             }
         }
 
         public static string ProjectsListConnectionString
-            => $"Data Source={ProjectsListPath};Version=3;";
+            => $"Data Source={ProjectsListPath}";
         /// <summary>앱 시작 시 1회 호출. 데이터 폴더 생성.</summary>
         public static void EnsureDataRoot()
         {

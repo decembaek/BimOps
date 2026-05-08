@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RevitAddIns>
-  <AddIn Type="Command">
+  <!--<AddIn Type="Command">
     <Name>BimOps - Export Doors To Excel</Name>
     <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
     <AddInId>6BDAA0D4-2BC7-4AF4-8E81-57CF904B34B7</AddInId>
@@ -16,14 +16,24 @@
     <FullClassName>BimOps.RevitAddin.Commands.ImportDoorsFromExcelCommand</FullClassName>
     <VendorId>BOPS</VendorId>
     <VendorDescription>BIM automation toolkit</VendorDescription>
-  </AddIn>
+  </AddIn>-->
 
-    <AddIn Type="Application">
+    <AddIn Type="Command">
+        <Name>BimOps - 세대 옵션 물량 자동화</Name>
+        <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
+        <FullClassName>BimOps.UI.Commands.LaunchBimOpsCommand</FullClassName>
+        <ClientId>9E0C4305-74F9-4555-A959-07A76EA13190</ClientId>
+        <VendorId>Decembaek</VendorId>
+        <VendorDescription>BimOps Team</VendorDescription>
+        <Text>BimOps 실행</Text>
+    </AddIn>
+
+    <!--<AddIn Type="Application">
         <Name>BimOps</Name>
         <Assembly>C:\RevitAddins\BimOps\BimOps.RevitAddin.dll</Assembly>
         <AddInId>D5067EC0-FF69-4EAA-8175-A03782161C43</AddInId>
         <FullClassName>BimOps.RevitAddin.App.Application_DialogBoxShowing</FullClassName>
         <VendorId>BOPS</VendorId>
         <VendorDescription>BIM automation toolkit</VendorDescription>
-    </AddIn>
+    </AddIn>-->
 </RevitAddIns>

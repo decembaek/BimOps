@@ -30,6 +30,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BimOps.Modules.DataExchange\BimOps.Modules.DataExchange.csproj" />
+		<ProjectReference Include="..\BimOps.UI\BimOps.UI.csproj" />
 	</ItemGroup>
 
 	<Target Name="CopyToDevAddinFolder" AfterTargets="Build">
