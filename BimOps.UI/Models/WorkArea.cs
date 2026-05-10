@@ -11,7 +11,8 @@ namespace BimOps.UI.Models
         UnitOptionStatus,    // 세대 옵션 현황
         QuantityCalculation, // 옵션 물량 산출 (실행)
         QuantityResult,      // 산출 결과 (조회)
-        HistoryReport        // 산출 이력 / 보고서 (이력 + Diff + 출력)
+        HistoryReport,        // 산출 이력 / 보고서 (이력 + Diff + 출력)
+        ProjectSettings,
     }
 
     public class WorkAreaEventArgs : System.EventArgs

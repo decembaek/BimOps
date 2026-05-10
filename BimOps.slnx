@@ -1,4 +1,8 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/deploy/" />
   <Folder Name="/deploy/2027/">
     <File Path="BimOps.addin" />
@@ -6,8 +10,12 @@
   <Folder Name="/src/">
     <Project Path="BimOps.Domain/BimOps.Domain.csproj" Id="bb819f67-3da0-4ef3-bb40-ae1850236159" />
     <Project Path="BimOps.Modules.DataExchange/BimOps.Modules.DataExchange.csproj" />
-    <Project Path="BimOps.RevitAddin/BimOps.RevitAddin.csproj" />
-    <Project Path="BimOps.UI/BimOps.UI.csproj" Id="1346a114-784e-4453-a56b-1b7573a7224f" />
+    <Project Path="BimOps.RevitAddin/BimOps.RevitAddin.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="BimOps.UI/BimOps.UI.csproj" Id="1346a114-784e-4453-a56b-1b7573a7224f">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
   </Folder>
   <Folder Name="/test/">
     <File Path="BimOps.UI/ProjectSelectionWindow.xaml" />

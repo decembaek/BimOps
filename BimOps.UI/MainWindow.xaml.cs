@@ -30,6 +30,7 @@ namespace BimOps.UI
             { WorkArea.QuantityCalculation,  new WorkAreaInfo("옵션 물량 산출",       true ) },
             { WorkArea.QuantityResult,       new WorkAreaInfo("산출 결과",            true ) },
             { WorkArea.HistoryReport,        new WorkAreaInfo("산출 이력 / 보고서",   false) },
+            { WorkArea.ProjectSettings,      new WorkAreaInfo("프로젝트 설정",        false) },
          };
 
         public MainWindow()
@@ -143,6 +144,11 @@ namespace BimOps.UI
                     };
                     return history;
 
+                case WorkArea.ProjectSettings:
+                    var settings = new ProjectSettingsView();
+                    settings.RequestExit += (_, __) => NavigateTo(WorkArea.Home);
+                    return settings;
+
                 default:
                     // placeholder
                     var sp = new StackPanel { Margin = new Thickness(8) };
@@ -200,26 +206,27 @@ namespace BimOps.UI
 
         private void OpenProjectSettings()
         {
-            try
-            {
-                var w = new Window
-                {
-                    Title = "테스트",
-                    Width = 400,
-                    Height = 300,
-                    Content = new TextBlock { Text = "테스트 윈도우입니다" }
-                };
+            //try
+            //{
+            //    var w = new Window
+            //    {
+            //        Title = "테스트",
+            //        Width = 400,
+            //        Height = 300,
+            //        Content = new TextBlock { Text = "테스트 윈도우입니다" }
+            //    };
 
-                // Revit 메인 윈도우 핸들을 Owner로 직접 지정
-                var helper = new System.Windows.Interop.WindowInteropHelper(w);
-                helper.Owner = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            //    // Revit 메인 윈도우 핸들을 Owner로 직접 지정
+            //    var helper = new System.Windows.Interop.WindowInteropHelper(w);
+            //    helper.Owner = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
 
-                w.Show();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            //    w.Show();
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
+            NavigateTo(WorkArea.ProjectSettings);
         }
 
         private void CreateNewRound()

@@ -1,25 +1,34 @@
-﻿using BimOps.UI.Data.Repositories;
-using BimOps.UI.Models;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using BimOps.UI.Data;
+using BimOps.UI.Data.Repositories;
+using BimOps.UI.Models;
 
-namespace BimOps.UI
+namespace BimOps.UI.Views
 {
-    public partial class ProjectSettingsWindow : Window
+    public partial class ProjectSettingsView : UserControl
     {
         public ObservableCollection<FinishCategory> FinishCategories { get; }
             = new ObservableCollection<FinishCategory>();
 
         private readonly FinishCategoryRepository _finishRepo;
+        private DataGrid _grid;
 
-        public ProjectSettingsWindow()
+        // 부모(MainWindow)에게 화면 이탈 요청
+        public event EventHandler RequestExit;
+
+        public ProjectSettingsView()
         {
             InitializeComponent();
 
-            // 현재 단지의 DB에서 마감재 카테고리 로드
             _finishRepo = new FinishCategoryRepository(AppState.CurrentConnectionString);
             LoadFinishCategories();
+
+            TxtSubtitle.Text = AppState.SelectedProject != null
+                ? $"{AppState.SelectedProject.Code} / {AppState.SelectedProject.Name}"
+                : "";
 
             ShowFinishCategoryPanel();
         }
@@ -31,6 +40,7 @@ namespace BimOps.UI
                 FinishCategories.Add(fc);
         }
 
+        // ===== 사이드바 =====
 
         private void NavMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -64,9 +74,8 @@ namespace BimOps.UI
             {
                 Text = "이 단지에서 관리할 마감재 종류를 정의합니다. 기준 데이터·산출 결과 등 모든 화면에서 이 목록을 참조합니다.",
                 FontSize = 12,
-                // Foreground = (System.Windows.Media.Brush)FindResource("MutedBrush"),
                 Foreground = TryFindResource("TextTertiaryBrush") as System.Windows.Media.Brush
-                 ?? System.Windows.Media.Brushes.Gray,
+                             ?? System.Windows.Media.Brushes.Gray,
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 0, 0, 12),
             };
@@ -78,10 +87,12 @@ namespace BimOps.UI
             contentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             contentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
+            var smallBtnStyle = TryFindResource("SmallButtonStyle") as Style;
+
             var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
-            var btnAdd = new Button { Content = "+ 카테고리 추가", Style = (Style)FindResource("SmallButton") };
+            var btnAdd = new Button { Content = "+ 카테고리 추가", Style = smallBtnStyle };
             btnAdd.Click += (s, e) => FinishCategories.Add(new FinishCategory { Code = "신규", Uom = "㎡" });
-            var btnDel = new Button { Content = "선택 행 삭제", Style = (Style)FindResource("SmallButton") };
+            var btnDel = new Button { Content = "선택 행 삭제", Style = smallBtnStyle };
             btnDel.Click += (s, e) =>
             {
                 if (_grid?.SelectedItem is FinishCategory fc) FinishCategories.Remove(fc);
@@ -104,8 +115,6 @@ namespace BimOps.UI
             ContentArea.Content = grid;
         }
 
-        private DataGrid _grid;
-
         private void ShowPlaceholder(string text)
         {
             ContentArea.Content = new TextBlock
@@ -116,22 +125,20 @@ namespace BimOps.UI
             };
         }
 
-        private void BtnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            // dialogResult = false;
-            Close();
-        }
+        // ===== 저장 / 이탈 =====
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            // 화면의 ObservableCollection 상태를 그대로 DB에 반영
             _finishRepo.ReplaceAll(FinishCategories);
 
-            // TODO: FinishCategories를 영속화 (DB/파일)
-            // DialogResult = true;
-            Close();
+            // 저장 후 홈으로 자동 복귀
+            RequestExit?.Invoke(this, EventArgs.Empty);
         }
 
-
+        private void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            // 저장 안 하고 그냥 복귀
+            RequestExit?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
